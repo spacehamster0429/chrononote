@@ -104,4 +104,4 @@ npm audit
 
 ## 라이선스
 
-Apache License 2.0 · Copyright 2026 우주햄찌. 자세한 내용은 [LICENSE](LICENSE)와 [NOTICE](NOTICE)를 확인하세요.
+Apache License 2.0 · Copyright 2026 우주햄찌. 자세한 내용은 [LICENSE](LICENSE), [NOTICE](NOTICE), [제3자 고지](THIRD_PARTY_NOTICES.md)를 확인하세요.

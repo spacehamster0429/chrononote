@@ -24,6 +24,7 @@ RUN apt-get update \
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json ./
+COPY LICENSE NOTICE THIRD_PARTY_NOTICES.md ./
 COPY public ./public
 COPY src ./src
 COPY README.md ./

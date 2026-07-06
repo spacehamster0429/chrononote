@@ -2,6 +2,12 @@
   "name": "chrononote",
   "version": "0.1.0",
   "description": "File-first hybrid memo service prototype from the ChronoNote system design.",
+  "license": "Apache-2.0",
+  "author": "우주햄찌",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spacehamster0429/chrononote.git"
+  },
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
