@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChronoNote</title>
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fffdf8" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111412" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+  <div id="appShell" class="shell mobile-layout sidebar-collapsed inspector-collapsed">
+    <aside id="sidePanel" class="side-panel">
+      <button id="sidebarToggleButton" class="side-toggle" type="button" data-tooltip="사이드바 열기"
+        aria-label="사이드바 열기">☰</button>
+
+      <nav class="side-rail" aria-label="빠른 작업">
+        <div class="rail-actions">
+          <button id="railNewMemoButton" class="rail-button" type="button" data-tooltip="새 메모"
+            aria-label="새 메모">＋</button>
+          <button id="railSearchButton" class="rail-button" type="button" data-tooltip="메모 검색"
+            aria-label="메모 검색">⌕</button>
+          <button id="railRecentButton" class="rail-button" type="button" data-tooltip="최근 메모"
+            aria-label="최근 메모">◷</button>
+        </div>
+        <div class="rail-bottom">
+          <button id="railSettingsButton" class="rail-button" type="button" data-tooltip="설정" aria-label="설정">⚙</button>
+          <button id="accountButton" class="account-chip" type="button" data-tooltip="계정 설정"
+            aria-label="계정 설정">C</button>
+        </div>
+      </nav>
+
+      <section id="sidebar" class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">C</div>
+          <div>
+            <strong>ChronoNote</strong>
+            <span id="sessionLabel">local</span>
+          </div>
+        </div>
+
+        <div class="mobile-list-heading" aria-hidden="true">
+          <strong>메모</strong>
+          <span id="mobileListCount">0개 메모</span>
+        </div>
+
+        <div id="memoSelectionBar" class="memo-selection-bar hidden" aria-live="polite">
+          <strong id="memoSelectionCount">0개 선택</strong>
+          <div>
+            <button id="pinSelectedMemosButton" type="button">고정</button>
+            <button id="restoreSelectedMemosButton" type="button">복원</button>
+            <button id="deleteSelectedMemosButton" type="button">삭제</button>
+            <button id="clearMemoSelectionButton" type="button">취소</button>
+          </div>
+        </div>
+
+        <div class="sidebar-actions">
+          <label class="search">
+            <span>⌕</span>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="검색" />
+          </label>
+          <input id="textImportInput" class="hidden" type="file" multiple
+            accept="text/*,.txt,.md,.markdown,.log,.csv,.tsv,.json,.jsonl,.yaml,.yml,.toml,.xml,.html,.css,.js,.jsx,.ts,.tsx,.py,.java,.c,.cpp,.h,.hpp,.cs,.go,.rs,.rb,.php,.sh,.bash,.zsh,.fish,.sql,.ini,.conf,.env,.properties" />
+          <button id="textImportButton" class="icon-button" type="button" data-tooltip="텍스트 파일 가져오기"
+            aria-label="텍스트 파일 가져오기">↥</button>
+          <button id="newMemoButton" class="icon-button" type="button" data-tooltip="새 메모" aria-label="새 메모">＋</button>
+        </div>
+
+        <div class="folder-create">
+          <input id="folderIconInput" class="folder-icon-input" type="text" inputmode="text" autocomplete="off"
+            maxlength="4" placeholder="📁" aria-label="폴더 이모지" />
+          <label class="folder-create-field">
+            <input id="folderNameInput" type="text" autocomplete="off" placeholder="새 폴더" />
+          </label>
+          <button id="createFolderButton" class="icon-button" type="button" data-tooltip="폴더 만들기"
+            aria-label="폴더 만들기">＋</button>
+        </div>
+
+        <div class="tag-filter-panel">
+          <div class="tag-filter-header">
+            <span>태그</span>
+            <button id="clearTagFilterButton" class="tag-clear-button hidden" type="button" data-tooltip="태그 필터 해제"
+              aria-label="태그 필터 해제">×</button>
+          </div>
+          <div id="tagFilterList" class="tag-filter-list"></div>
+        </div>
+
+        <nav id="memoList" class="memo-list" aria-label="메모 목록"></nav>
+
+        <footer class="sidebar-footer">
+          <button id="accountSummaryButton" class="account-summary" type="button">
+            <span id="accountInitial" class="account-dot">C</span>
+            <span>
+              <strong>계정</strong>
+              <small id="accountSummaryEmail">local@chrononote.dev</small>
+            </span>
+          </button>
+          <button id="settingsButton" class="settings-button" type="button">
+            <span>⚙</span>
+            <strong>설정</strong>
+          </button>
+        </footer>
+      </section>
+    </aside>
+
+    <main class="workspace">
+      <section class="editor-pane">
+        <header id="mobileAppBar" class="mobile-appbar" aria-label="모바일 작업 바">
+          <button id="mobileMenuButton" class="mobile-icon-button" type="button" aria-label="메모 목록 열기">‹</button>
+          <button id="mobileTitleButton" class="mobile-title-button" type="button" aria-label="메모 목록 열기">
+            <span id="mobileTitleLabel">ChronoNote</span>
+            <small id="mobileSubtitleLabel">메모</small>
+          </button>
+          <div class="mobile-appbar-actions">
+            <button id="mobileSearchButton" class="mobile-icon-button" type="button" aria-label="검색">⌕</button>
+            <button id="mobileNewMemoButton" class="mobile-icon-button primary" type="button" aria-label="새 메모">＋</button>
+          </div>
+        </header>
+
+        <div id="guestBanner" class="guest-banner hidden">
+          <span>로그인하지 않으면 서버에 저장되지 않습니다. 저장하려면 <button id="guestRegisterLink" class="inline-link"
+              type="button">회원가입</button>하거나 <button id="guestLoginLink" class="inline-link"
+              type="button">로그인</button>하세요.</span>
+        </div>
+
+        <div id="networkBanner" class="network-banner hidden" role="status" aria-live="polite">
+          오프라인입니다. 작성 내용은 화면에 남아 있지만 서버에는 아직 저장되지 않았습니다.
+        </div>
+
+        <div id="recoveryBanner" class="recovery hidden">
+          <span>저장되지 않은 최신 자동 저장본이 있습니다.</span>
+          <div>
+            <button id="loadAutosaveButton" type="button">불러오기</button>
+            <button id="discardAutosaveButton" type="button">버리기</button>
+          </div>
+        </div>
+
+        <header class="editor-toolbar">
+          <button id="editorBackButton" class="editor-back-button" type="button" aria-label="메모 목록으로 돌아가기">‹</button>
+          <input id="titleInput" class="title-input" type="text" placeholder="제목" />
+          <div class="toolbar-actions">
+            <input id="imageInput" class="hidden" type="file" accept="image/*,.apng" />
+            <button id="imageButton" class="icon-button" type="button" data-tooltip="이미지 삽입"
+              aria-label="이미지 삽입">▧</button>
+            <button id="historyButton" class="icon-button" type="button" data-tooltip="히스토리"
+              aria-label="히스토리">◷</button>
+            <button id="editorModeButton" class="icon-button text-icon-button" type="button" data-tooltip="미리보기"
+              aria-label="미리보기">보기</button>
+            <button id="saveButton" class="save-button" type="button">저장</button>
+            <button id="toggleInspectorButton" class="icon-button" type="button" data-tooltip="오른쪽 패널 접기"
+              aria-label="오른쪽 패널 접기">▥</button>
+          </div>
+        </header>
+
+        <div class="meta-inputs">
+          <div id="folderPicker" class="folder-picker">
+            <button id="folderPickerButton" class="folder-picker-button" type="button" aria-haspopup="listbox"
+              aria-expanded="false">
+              <span id="folderPickerIcon" class="folder-picker-icon">📁</span>
+              <span id="folderPickerLabel" class="folder-picker-label">기본 폴더</span>
+              <span class="folder-picker-arrow">⌄</span>
+            </button>
+            <div id="folderPickerMenu" class="folder-picker-menu hidden" role="listbox"></div>
+          </div>
+          <input id="tagsInput" class="tags-input" type="text" placeholder="태그, 쉼표로 구분" />
+        </div>
+        <div id="startGuideAction" class="start-guide-action hidden">
+          <span>처음이면</span>
+          <a id="startGuideTutorialLink" href="chrononote:tutorial">튜토리얼 시작하기</a>
+          <small>나중에 설정에서도 다시 볼 수 있습니다.</small>
+        </div>
+        <textarea id="contentInput" spellcheck="false" placeholder="마크다운으로 작성"></textarea>
+        <article id="inlinePreview" class="inline-preview preview hidden"></article>
+
+        <footer class="statusbar">
+          <span id="statusLabel">준비됨</span>
+          <span id="updatedLabel"></span>
+        </footer>
+      </section>
+
+      <div id="inspectorResizeHandle" class="inspector-resize" role="separator" aria-orientation="vertical"
+        data-tooltip="드래그해서 폭 조절"></div>
+
+      <aside id="inspector" class="inspector">
+        <div class="inspector-header">
+          <div class="tabs" role="tablist">
+            <button id="previewTab" class="active" type="button">미리보기</button>
+            <button id="historyTab" type="button">히스토리</button>
+          </div>
+          <button id="closeInspectorButton" class="inspector-close-button" type="button" data-tooltip="오른쪽 패널 닫기"
+            aria-label="오른쪽 패널 닫기">×</button>
+        </div>
+
+        <section id="previewPanel" class="panel active">
+          <article id="preview" class="preview"></article>
+        </section>
+
+        <section id="historyPanel" class="panel">
+          <ol id="historyList" class="history-list"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <nav id="mobileTabBar" class="mobile-tabbar" aria-label="모바일 탭">
+      <button id="mobileNotesTab" type="button">
+        <span>☰</span>
+        <small>메모</small>
+      </button>
+      <button id="mobileWriteTab" type="button">
+        <span>✎</span>
+        <small>작성</small>
+      </button>
+      <button id="mobileViewTab" type="button">
+        <span>▥</span>
+        <small>보기</small>
+      </button>
+      <button id="mobileAccountTab" type="button">
+        <span>●</span>
+        <small>계정</small>
+      </button>
+      <button id="mobileSettingsTab" type="button">
+        <span>⚙</span>
+        <small>설정</small>
+      </button>
+    </nav>
+  </div>
+
+  <dialog id="commitDialog" class="account-dialog commit-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong>커밋 메시지</strong>
+          <span>이번 저장 내용을 짧게 적어주세요. 권장입니다.</span>
+        </div>
+        <button id="closeCommitDialogButton" class="icon-button subtle" type="button" data-tooltip="닫기"
+          aria-label="닫기">×</button>
+      </header>
+      <div class="commit-dialog-body">
+        <label class="field">
+          <span>메시지</span>
+          <input id="commitMessageInput" class="commit-input" type="text" placeholder="예: 초안 정리" autocomplete="off" />
+        </label>
+        <p>비워두면 제목을 기준으로 자동 메시지가 만들어집니다.</p>
+        <div class="confirm-actions">
+          <button id="cancelCommitButton" class="secondary-button" type="button">취소</button>
+          <button id="confirmCommitButton" class="save-button" type="button">저장</button>
+        </div>
+      </div>
+    </section>
+  </dialog>
+
+  <dialog id="downloadDialog" class="account-dialog download-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong>메모 다운로드</strong>
+          <span>체험 모드에서는 서버에 저장되지 않습니다.</span>
+        </div>
+        <button id="closeDownloadDialogButton" class="icon-button subtle" type="button" data-tooltip="닫기"
+          aria-label="닫기">×</button>
+      </header>
+      <div class="commit-dialog-body">
+        <p>이 버튼을 누르면 현재 메모가 .md 파일로 기기에 다운로드됩니다.</p>
+        <div class="confirm-actions">
+          <button id="cancelDownloadButton" class="secondary-button" type="button">취소</button>
+          <button id="confirmDownloadButton" class="save-button" type="button">다운로드</button>
+        </div>
+      </div>
+    </section>
+  </dialog>
+
+  <dialog id="unsavedDialog" class="account-dialog unsaved-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong>수정 사항</strong>
+          <span>아직 저장하지 않은 내용이 있습니다.</span>
+        </div>
+      </header>
+      <div class="commit-dialog-body">
+        <div class="confirm-actions">
+          <button id="saveUnsavedButton" class="save-button" type="button">저장</button>
+          <button id="discardUnsavedButton" class="secondary-button danger" type="button">버리기</button>
+        </div>
+      </div>
+    </section>
+  </dialog>
+
+  <dialog id="historyDetailDialog" class="account-dialog history-detail-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong id="historyDetailTitle">히스토리</strong>
+          <span id="historyDetailMeta"></span>
+        </div>
+        <button id="closeHistoryDetailButton" class="icon-button subtle" type="button" data-tooltip="닫기"
+          aria-label="닫기">×</button>
+      </header>
+      <div class="history-detail-tabs" role="tablist">
+        <button id="historyRawTab" class="active" type="button">원본</button>
+        <button id="historyDiffTab" type="button">비교</button>
+      </div>
+      <section id="historyRawPanel" class="history-detail-panel active">
+        <pre id="historyRawContent" class="history-raw-content"></pre>
+      </section>
+      <section id="historyDiffPanel" class="history-detail-panel">
+        <div class="history-diff-legend">
+          <span class="diff-remove-swatch">이전</span>
+          <span class="diff-add-swatch">현재</span>
+        </div>
+        <div id="historyDiffContent" class="history-diff-content"></div>
+      </section>
+    </section>
+  </dialog>
+
+  <dialog id="historyDialog" class="account-dialog history-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong>히스토리</strong>
+          <span id="historyDialogMeta">저장된 변경 내역</span>
+        </div>
+        <button id="closeHistoryDialogButton" class="icon-button subtle" type="button" data-tooltip="닫기"
+          aria-label="닫기">×</button>
+      </header>
+      <ol id="floatingHistoryList" class="history-list"></ol>
+    </section>
+  </dialog>
+
+  <dialog id="trashDialog" class="account-dialog trash-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong>휴지통</strong>
+          <span id="trashDialogMeta">7일 뒤 자동으로 완전 삭제됩니다.</span>
+        </div>
+        <button id="closeTrashDialogButton" class="icon-button subtle" type="button" data-tooltip="닫기"
+          aria-label="닫기">×</button>
+      </header>
+      <section class="trash-intro">
+        <strong>보관된 메모</strong>
+        <span>휴지통으로 이동한 메모는 여기서만 보이고, 7일 뒤 완전히 삭제됩니다.</span>
+      </section>
+      <div id="trashList" class="trash-list"></div>
+    </section>
+  </dialog>
+
+  <dialog id="accountDialog" class="account-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong>계정</strong>
+          <span id="accountEmail">local@chrononote.dev</span>
+        </div>
+        <button id="closeAccountButton" class="icon-button subtle" type="button" data-tooltip="닫기"
+          aria-label="닫기">×</button>
+      </header>
+
+      <section class="account-card">
+        <div class="account-identity">
+          <span id="accountProviderBadge" class="provider-badge">Local</span>
+          <div>
+            <strong id="accountProviderLabel">로컬 개발 계정</strong>
+            <small id="accountUserId">workspace</small>
+          </div>
+        </div>
+        <div class="account-card-actions">
+          <button id="logoutButton" class="secondary-button" type="button">로그아웃</button>
+          <button id="showDeleteAccountButton" class="delete-account-link" type="button">회원탈퇴</button>
+        </div>
+      </section>
+
+      <section id="logoutConfirmPanel" class="confirm-panel hidden">
+        <strong>정말 로그아웃 하시겠습니까?</strong>
+        <div class="confirm-actions">
+          <button id="cancelLogoutButton" class="secondary-button" type="button">아니오</button>
+          <button id="confirmLogoutButton" class="save-button" type="button">예</button>
+        </div>
+      </section>
+
+      <section id="accountLinkPanel" class="account-link-panel hidden">
+        <div class="account-link-heading">
+          <strong>로그인 방식</strong>
+          <span id="accountLinkHint">계정에 다른 로그인 방식을 추가할 수 있습니다.</span>
+        </div>
+        <div id="passwordSetupBlock" class="account-link-block hidden">
+          <div>
+            <strong>비밀번호 등록</strong>
+            <small>Google로 시작한 계정도 이메일과 비밀번호로 로그인할 수 있습니다.</small>
+          </div>
+          <label class="auth-field">
+            <input id="accountPasswordInput" type="password" placeholder="새 비밀번호" autocomplete="new-password"
+              aria-label="새 비밀번호" />
+            <span id="accountPasswordStatus" class="auth-status hidden" aria-live="polite"></span>
+          </label>
+          <label class="auth-field">
+            <input id="accountPasswordConfirmInput" type="password" placeholder="새 비밀번호 확인" autocomplete="new-password"
+              aria-label="새 비밀번호 확인" />
+            <span id="accountPasswordConfirmStatus" class="auth-status hidden" aria-live="polite"></span>
+          </label>
+          <button id="setAccountPasswordButton" class="save-button" type="button">비밀번호 등록</button>
+        </div>
+        <div id="googleLinkBlock" class="account-link-block hidden">
+          <div>
+            <strong>Google 계정 연동</strong>
+            <small>이메일 계정을 Google 로그인으로도 열 수 있습니다.</small>
+          </div>
+          <a id="googleLinkAccountLink" class="google-button" href="/api/auth/google/start?mode=link">
+            <span>G</span>
+            <strong>Google 계정 연동</strong>
+          </a>
+        </div>
+      </section>
+
+      <section id="deleteAccountPanel" class="delete-account-panel hidden">
+        <strong>정말 탈퇴하시겠습니까?</strong>
+        <p>탈퇴하시려면 이메일과 비밀번호를 입력해주세요. 탈퇴 후 48시간 안에는 같은 계정으로 로그인하면 복구됩니다.</p>
+        <input id="deleteAccountEmailInput" type="email" placeholder="email@example.com" autocomplete="email" />
+        <input id="deleteAccountPasswordInput" type="password" placeholder="비밀번호" autocomplete="current-password" />
+        <div class="delete-account-actions">
+          <button id="cancelDeleteAccountButton" class="secondary-button" type="button">취소</button>
+          <button id="confirmDeleteAccountButton" class="secondary-button danger" type="button">탈퇴 진행</button>
+        </div>
+      </section>
+
+      <section id="authCard" class="auth-card">
+        <div class="auth-heading">
+          <strong id="authModeTitle">로그인</strong>
+        </div>
+        <div class="auth-fields">
+          <label class="auth-field">
+            <input id="authEmailInput" type="email" placeholder="이메일 주소" autocomplete="email" aria-label="이메일 주소" />
+            <span id="authEmailStatus" class="auth-status hidden" aria-live="polite"></span>
+          </label>
+          <label class="auth-field">
+            <input id="authPasswordInput" type="password" placeholder="비밀번호" autocomplete="current-password"
+              aria-label="비밀번호" />
+            <span id="authPasswordStatus" class="auth-status hidden" aria-live="polite"></span>
+          </label>
+          <label id="authPasswordConfirmField" class="auth-field hidden">
+            <input id="authPasswordConfirmInput" type="password" placeholder="비밀번호 확인" autocomplete="new-password"
+              aria-label="비밀번호 확인" />
+            <span id="authPasswordConfirmStatus" class="auth-status hidden" aria-live="polite"></span>
+          </label>
+          <div id="authConsentGroup" class="auth-consent-group hidden">
+            <label class="auth-consent-row">
+              <input id="termsConsentCheckbox" type="checkbox" />
+              <span><strong>(필수)</strong> <a href="/terms/" target="_blank" rel="noopener noreferrer">이용약관</a>에 동의합니다.</span>
+            </label>
+            <label class="auth-consent-row">
+              <input id="privacyConsentCheckbox" type="checkbox" />
+              <span><strong>(필수)</strong> <a href="/privacy/" target="_blank" rel="noopener noreferrer">개인정보 수집·이용</a>에 동의합니다.</span>
+            </label>
+            <label class="auth-consent-row">
+              <input id="ageConsentCheckbox" type="checkbox" />
+              <span><strong>(필수)</strong> 만 14세 이상입니다.</span>
+            </label>
+            <details class="consent-summary">
+              <summary>개인정보 수집·이용 요약</summary>
+              <p>목적: 계정·개인 작업공간 제공<br>항목: 이메일, 비밀번호 해시, 동의 기록<br>기간: 탈퇴 요청 후 48시간까지</p>
+              <p>동의를 거부할 수 있으나 회원가입과 서버 저장 기능은 이용할 수 없습니다.</p>
+            </details>
+          </div>
+          <button id="passwordAuthButton" class="save-button" type="button">이메일 로그인</button>
+        </div>
+        <div class="auth-provider-row">
+          <a id="googleLoginLink" class="google-button" href="/api/auth/google/start">
+            <span>G</span>
+            <strong>Google로 계속</strong>
+          </a>
+        </div>
+        <p id="authSwitchRegister" class="auth-switch">혹시 계정이 없으신가요? <button id="registerModeButton"
+            type="button">회원가입</button></p>
+        <p id="authSwitchLogin" class="auth-switch hidden">혹시 계정이 있으신가요? <button id="loginModeButton"
+            type="button">로그인</button></p>
+        <p id="authHint" class="auth-hint"></p>
+      </section>
+    </section>
+  </dialog>
+
+  <dialog id="settingsDialog" class="account-dialog settings-dialog">
+    <section class="account-panel">
+      <header>
+        <div>
+          <strong>설정</strong>
+          <span>앱 설정과 동기화</span>
+        </div>
+        <button id="closeSettingsButton" class="icon-button subtle" type="button" data-tooltip="닫기"
+          aria-label="닫기">×</button>
+      </header>
+
+      <div id="accountSettingsContent" class="account-settings-content">
+        <section id="settingsAccountCard" class="settings-account-card">
+          <span id="settingsAccountInitial" class="account-dot">C</span>
+          <div>
+            <strong id="settingsAccountTitle">계정</strong>
+            <small id="settingsAccountSubtitle">체험 모드</small>
+          </div>
+          <button id="settingsLoginButton" class="secondary-button" type="button">로그인</button>
+          <button id="settingsLogoutButton" class="secondary-button hidden" type="button">로그아웃</button>
+        </section>
+
+        <label class="setting-row">
+          <span>자동 저장</span>
+          <input id="autosaveToggle" type="checkbox" />
+        </label>
+
+        <div class="field">
+          <span>화면 모드</span>
+          <div class="theme-toggle wide" aria-label="화면 모드">
+            <button id="dialogSystemThemeButton" type="button">System</button>
+            <button id="dialogLightThemeButton" type="button">Light</button>
+            <button id="dialogDarkThemeButton" type="button">Dark</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span>UI 레이아웃</span>
+          <div class="layout-toggle wide" aria-label="UI 레이아웃">
+            <button id="mobileLayoutButton" type="button">Mobile</button>
+            <button id="desktopLayoutButton" type="button">Desktop</button>
+          </div>
+        </div>
+
+        <label id="orientationLockSetting" class="setting-row orientation-lock-setting hidden">
+          <span>화면 회전 잠금</span>
+          <input id="orientationLockToggle" type="checkbox" />
+        </label>
+
+        <div id="storageUsage" class="storage-usage" aria-live="polite">작업공간 사용량을 확인하는 중…</div>
+
+        <details class="advanced-settings">
+          <summary>백업 및 고급 설정</summary>
+          <div class="advanced-settings-content">
+            <label class="field">
+              <span>GitHub 저장소</span>
+              <input id="githubRepoInput" type="text" placeholder="owner/repo" autocomplete="off" />
+            </label>
+
+            <label class="field">
+              <span>GitHub PAT</span>
+              <input id="githubTokenInput" type="password" placeholder="새 토큰 입력 시 교체" autocomplete="off" />
+            </label>
+            <small>토큰은 서버에서 암호화해 저장합니다. 메모 백업 전용 저장소와 최소 권한 토큰을 권장합니다.</small>
+          </div>
+        </details>
+
+        <div class="dialog-actions">
+          <button id="saveSettingsButton" class="save-button" type="button">설정 저장</button>
+        </div>
+
+        <div class="settings-actions">
+          <button id="installAppButton" class="secondary-button install-app-button" type="button">앱 설치</button>
+          <button id="settingsTrashButton" class="secondary-button" type="button">휴지통</button>
+          <button id="settingsTutorialButton" class="secondary-button tiny-action-button" type="button">튜토리얼 다시 보기</button>
+          <button id="settingsSyncButton" class="secondary-button" type="button">GitHub 동기화</button>
+          <button id="settingsRebuildButton" class="secondary-button" type="button">인덱스 재빌드</button>
+          <a id="settingsExportLink" class="secondary-button" href="/api/export/archive">ZIP 내보내기</a>
+        </div>
+        <footer class="settings-legal-links">
+          <a href="/terms/" target="_blank" rel="noopener noreferrer">이용약관</a>
+          <span aria-hidden="true">·</span>
+          <a href="/privacy/" target="_blank" rel="noopener noreferrer">개인정보 처리방침</a>
+          <span aria-hidden="true">·</span>
+          <span>© 2026 우주햄찌</span>
+        </footer>
+      </div>
+    </section>
+  </dialog>
+
+  <div id="tutorialOverlay" class="tutorial-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+    <div id="tutorialSpotlight" class="tutorial-spotlight hidden"></div>
+    <section id="tutorialCard" class="tutorial-card">
+      <header>
+        <span id="tutorialStepLabel">1 / 7</span>
+        <button id="tutorialCloseButton" class="icon-button subtle" type="button" data-tooltip="닫기" aria-label="닫기">×</button>
+      </header>
+      <strong id="tutorialTitle">튜토리얼</strong>
+      <p id="tutorialText"></p>
+      <footer>
+        <button id="tutorialPrevButton" class="secondary-button" type="button">이전</button>
+        <button id="tutorialNextButton" class="save-button" type="button">다음</button>
+      </footer>
+    </section>
+  </div>
+
+  <div id="appTooltip" class="app-tooltip" role="tooltip"></div>
+
+  <script src="/vendor/marked/marked.min.js"></script>
+  <script src="/vendor/dompurify/purify.min.js"></script>
+  <script src="/vendor/katex/katex.min.js"></script>
+  <script src="/vendor/katex/auto-render.min.js"></script>
+  <script type="module" src="/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "chrononote",
+  "version": "0.1.0",
+  "description": "File-first hybrid memo service prototype from the ChronoNote system design.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:local": "HOST=127.0.0.1 node src/server.js",
+    "vendor:assets": "node scripts/vendor-assets.js",
+    "test": "node --test",
+    "check": "node --check src/auth.js && node --check src/frontmatter.js && node --check src/storage.js && node --check src/server.js && node --check public/app.js && node --test"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.9.0",
+    "file-type": "^22.0.1",
+    "sanitize-html": "^2.17.4",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "dompurify": "^3.4.11",
+    "jsdom": "^29.1.1",
+    "katex": "^0.16.47",
+    "marked": "^18.0.5"
+  }
+}

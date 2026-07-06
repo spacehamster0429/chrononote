@@ -1,0 +1,11 @@
+node_modules
+server-data
+.env
+.env.*
+.git
+.codex
+*.zip
+chrononote-docker-package
+backups
+npm-debug.log
+.DS_Store

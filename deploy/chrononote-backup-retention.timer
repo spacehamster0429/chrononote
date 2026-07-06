@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily ChronoNote backup retention cleanup
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=30m
+Unit=chrononote-backup-retention.service
+
+[Install]
+WantedBy=timers.target

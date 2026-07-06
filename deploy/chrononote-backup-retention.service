@@ -1,0 +1,7 @@
+[Unit]
+Description=Prune ChronoNote deployment backups older than 30 days
+ConditionPathIsDirectory=%h/backups/chrononote
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/find %h/backups/chrononote -mindepth 1 -maxdepth 1 -type d -mtime +30 -exec /usr/bin/rm -rf -- {} +

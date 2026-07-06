@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ChronoNote">
+  <rect width="512" height="512" rx="112" fill="#fffdf8"/>
+  <rect x="72" y="64" width="368" height="384" rx="48" fill="#17736d"/>
+  <path d="M128 146c0-13.3 10.7-24 24-24h208c13.3 0 24 10.7 24 24v220c0 13.3-10.7 24-24 24H152c-13.3 0-24-10.7-24-24V146z" fill="#fffdf8"/>
+  <path d="M170 188h172M170 248h172M170 308h116" stroke="#17736d" stroke-width="28" stroke-linecap="round"/>
+  <path d="M340 318c31.5 0 57 25.5 57 57s-25.5 57-57 57-57-25.5-57-57 25.5-57 57-57z" fill="#b47b12"/>
+  <path d="M340 344v34l24 15" stroke="#fffdf8" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,28 @@
+services:
+  chrononote:
+    build: .
+    container_name: chrononote
+    ports:
+      - "127.0.0.1:3030:3030"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3030
+      CHRONONOTE_DATA_DIR: /data
+      CHRONONOTE_SECRET: ${CHRONONOTE_SECRET:?set-a-long-random-secret}
+      CHRONONOTE_JWT_SECRET: ${CHRONONOTE_JWT_SECRET:?set-a-long-random-jwt-secret}
+      CHRONONOTE_SECURE_COOKIES: ${CHRONONOTE_SECURE_COOKIES:-auto}
+      CHRONONOTE_TRUST_PROXY: ${CHRONONOTE_TRUST_PROXY:-false}
+      CHRONONOTE_MAX_USERS: ${CHRONONOTE_MAX_USERS:-64}
+      CHRONONOTE_WORKSPACE_QUOTA_BYTES: ${CHRONONOTE_WORKSPACE_QUOTA_BYTES:-268435456}
+      CHRONONOTE_MAX_MEMOS_PER_USER: ${CHRONONOTE_MAX_MEMOS_PER_USER:-5000}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:3030/api/auth/google/callback}
+    volumes:
+      - ./server-data:/data:Z
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,noexec,size=256m
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped

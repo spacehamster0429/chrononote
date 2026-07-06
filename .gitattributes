@@ -1,0 +1,6 @@
+* text=auto eol=lf
+public/vendor/** linguist-vendored
+*.png binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
