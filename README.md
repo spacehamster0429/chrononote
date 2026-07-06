@@ -3,7 +3,7 @@
 Markdown/Git 원본 중심의 하이브리드 메모 서비스 MVP입니다. 설계서의 핵심 흐름을 Node 내장 HTTP 서버와 `better-sqlite3` 기반 저장 계층으로 구현했습니다.
 
 운영 주소: [note.serika.duckdns.org](https://note.serika.duckdns.org) · [이용약관](https://note.serika.duckdns.org/terms/) · [개인정보 처리방침](https://note.serika.duckdns.org/privacy/)
-###### 위 서비스는 개인 서버에서 테스트 목적으로 운영되며, 상시 가동이나 지속적인 서비스 제공을 보장하지 않습니다.
+###### 본 서비스는 개인 서버에서 테스트 목적으로 운영되며, 상시 가동이나 지속적인 서비스 제공을 보장하지 않습니다.
 
 ## 실행
 
