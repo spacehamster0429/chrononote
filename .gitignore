@@ -7,3 +7,6 @@ server-data/
 chrononote-docker-package/
 .codex
 .DS_Store
+
+# Local design documents
+️ 심층 시스템 설계서 차세대 하이브리드.md
